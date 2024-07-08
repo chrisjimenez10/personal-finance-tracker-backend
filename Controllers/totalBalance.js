@@ -63,6 +63,20 @@ router.put("/:id", async (req, res)=>{
     }
 });
 
+router.delete("/:id", async (req, res)=>{
+    const {id} = req.params;
+    let client;
+    try{
+        client = await pool.connect();
+        await client.query("DELETE from user_accounts WHERE id = $1;", [id]);
+        res.status(200).json({message: `Record with id ${id} deleted successfully`});
+    }catch(error){
+        res.status(500).json({error:error.message});
+    }finally{
+        client.release();
+    }
+});
+
 
 
 
