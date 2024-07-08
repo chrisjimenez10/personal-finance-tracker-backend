@@ -10,9 +10,10 @@ const pool = new Pool({
     password: "cratose@41795"
 });
 
+let client;
+
 //Routes
 router.get("/", async (req, res)=>{
-    let client;
     try{
         client = await pool.connect(); //connect() establishes connections with Postgres
         const fetchedPets = await client.query("SELECT * FROM user_accounts;");
@@ -33,8 +34,28 @@ router.get("/", async (req, res)=>{
     }
 });
 
+router.get("/:id", async (req, res)=>{
+    const {id} = req.params;
+    try{
+        client = await pool.connect();
+        const fetchedPets = await client.query("SELECT * FROM user_accounts WHERE id = $1;", [id]);
+        const formattedData = fetchedPets.rows.map(row => ({
+            id: row.id,
+            user_name: row.user_name,
+            total_balance: row.total_balance,
+            date_created: row.date_created.toISOString().split("T")[0],
+            income_transactions: row.income_transactions,
+            expense_transactions: row.expense_transactions
+        }))
+        res.status(200).json(formattedData);
+    }catch(error){
+        res.status(500).json({error:error.message});
+    }finally{
+        client.release();
+    }
+})
+
 router.post("/", async (req, res)=>{
-    let client;
     const {user_name, total_balance, date_created, income_transactions, expense_transactions} = req.body;
     try{
         client = await pool.connect();
@@ -50,7 +71,6 @@ router.post("/", async (req, res)=>{
 
 router.put("/:id", async (req, res)=>{
     const {id} = req.params;
-    let client;
     const {user_name, total_balance, date_created, income_transactions, expense_transactions} = req.body;
     try{
         client = await pool.connect();
@@ -65,7 +85,6 @@ router.put("/:id", async (req, res)=>{
 
 router.delete("/:id", async (req, res)=>{
     const {id} = req.params;
-    let client;
     try{
         client = await pool.connect();
         await client.query("DELETE from user_accounts WHERE id = $1;", [id]);
@@ -76,8 +95,6 @@ router.delete("/:id", async (req, res)=>{
         client.release();
     }
 });
-
-
 
 
 //Export
