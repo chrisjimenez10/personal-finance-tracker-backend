@@ -2,12 +2,13 @@
 const express = require("express");
 const router = express.Router();
 const { Pool } = require("pg"); //Using the Pool Class to configure connection to Posgtres Databse
+require("dotenv").config();
 
 //Database Connection Configuration
 const pool = new Pool({
-    database: "finance_tracker",
-    user: "christopherjimenez",
-    password: "cratose@41795"
+    database: process.env.DB_DATABASE,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD
 });
 
 let client;
@@ -95,7 +96,6 @@ router.delete("/:id", async (req, res)=>{
         client.release();
     }
 });
-
 
 //Export
 module.exports = router;
