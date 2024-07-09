@@ -12,6 +12,7 @@ const pool = new Pool({
 });
 
 let client;
+let userAccountResults;
 
 //Routes
 router.get("/", async (req, res)=>{
@@ -39,18 +40,27 @@ router.get("/:id", async (req, res)=>{
     const {id} = req.params;
     try{
         client = await pool.connect();
-        const fetchedPets = await client.query("SELECT * FROM user_accounts WHERE id = $1;", [id]);
-        const formattedData = fetchedPets.rows.map(row => ({
-            id: row.id,
-            user_name: row.user_name,
-            total_balance: row.total_balance,
-            date_created: row.date_created.toISOString().split("T")[0],
-            income_transactions: row.income_transactions,
-            expense_transactions: row.expense_transactions
-        }))
-        res.status(200).json(formattedData);
+        userAccountResults = await client.query("SELECT * FROM user_accounts WHERE id = $1;", [id]);
+        if(userAccountResults.rows.length === 0){
+            res.status(404);
+            throw new Error ("User account does not exist, please provide valid id");
+        }else{
+            const formattedData = userAccountResults.rows.map(row => ({
+                id: row.id,
+                user_name: row.user_name,
+                total_balance: row.total_balance,
+                date_created: row.date_created.toISOString().split("T")[0],
+                income_transactions: row.income_transactions,
+                expense_transactions: row.expense_transactions
+            }))
+            res.status(200).json(formattedData);
+        }     
     }catch(error){
+        if(res.statusCode === 404){
+            res.json({error:error.message});
+        }else{
         res.status(500).json({error:error.message});
+        }
     }finally{
         client.release();
     }
@@ -75,7 +85,7 @@ router.put("/:id", async (req, res)=>{
     const {user_name, total_balance, date_created, income_transactions, expense_transactions} = req.body;
     try{
         client = await pool.connect();
-        const userAccountResults = await client.query("SELECT * FROM user_accounts WHERE id = $1;", [id]);
+        userAccountResults = await client.query("SELECT * FROM user_accounts WHERE id = $1;", [id]);
         if(userAccountResults.rows.length === 0){
             res.status(404);
             throw new Error ("User account does not exist, please provide valid id");
@@ -94,7 +104,7 @@ router.delete("/:id", async (req, res)=>{
     const {id} = req.params;
     try{
         client = await pool.connect();
-        const userAccountResults = await client.query("SELECT * FROM user_accounts WHERE id = $1;", [id]);
+        userAccountResults = await client.query("SELECT * FROM user_accounts WHERE id = $1;", [id]);
         if(userAccountResults.rows.length === 0){
             //Condition is based on length of the array that the "rows" property has, which is a property from the object that is retrieved form the query (If lenght is 0, it means there are no records that result from the query)
             res.status(404);
