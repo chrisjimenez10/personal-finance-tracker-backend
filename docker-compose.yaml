@@ -1,1 +1,28 @@
- 
+version: '3.8'
+
+services:
+  api:
+    build: .
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+    networks:
+      - personal_finance_tracker
+  
+  postgres:
+    image: postgres:latest
+    env_file:
+      - .env
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - personal_finance_tracker
+
+networks:
+  personal_finance_tracker:
+
+volumes:
+  pgdata:
