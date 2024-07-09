@@ -1,7 +1,7 @@
 //Import
 const express = require("express");
 const morgan = require("morgan");
-const totalBalanceRouter = require("./controllers/totalBalance.js");
+const totalBalanceRouter = require("./Controllers/totalBalance.js");
 
 const app = express();
 const port = 3000;
