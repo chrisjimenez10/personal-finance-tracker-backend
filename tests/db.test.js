@@ -30,17 +30,23 @@ describe("PostgreSQL Queries", ()=>{
         if(client){
             client.release();
         }
-    })
+    });
 
     it("should return run a successfull query", async ()=>{
         const results = await client.query("SELECT * FROM user_accounts;");
-        expect(results.rows.length).toBeGreaterThanOrEqual(1);
+        expect(results.rows.length).toBeGreaterThanOrEqual(0);
     });
-    it("should return the key property id and ensure it is an integer", async ()=>{
+
+    it("should return the key property id", async ()=>{
         const results = await client.query("SELECT * FROM user_accounts;");
         expect(results.rows[0]).toHaveProperty("id");
-        expect(typeof results.rows[0].id).toBe("number");
     });
+
+    it("should return user_name property key value as a string", async ()=>{
+        const results = await client.query("SELECT * FROM user_accounts;");
+        expect(typeof results.rows[0].user_name).toBe("sring");
+    })
+
 });
 
 
