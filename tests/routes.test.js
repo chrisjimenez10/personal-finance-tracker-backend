@@ -43,50 +43,50 @@ describe("API Routes Status", ()=>{
         expect(response.statusCode).toBe(404);
     });
 
-    // it("POST route should return a 201 status code for successfull creation of record", async ()=>{
-    //     response = await request(app)
-    //     .post("/totalbalance")
-    //     .send({
-    //         user_name: "test-post-2",
-    //         total_balance: 500,
-    //         date_created: "2024-07-10",
-    //         income_transactions: 50,
-    //         expense_transactions: 50
-    //     });
-    //     expect(response.statusCode).toBe(201);
-    // });
+    it("POST route should return a 201 status code for successfull creation of record", async ()=>{
+        response = await request(app)
+        .post("/totalbalance")
+        .send({
+            user_name: "test-post-2",
+            total_balance: 500,
+            date_created: "2024-07-10",
+            income_transactions: 50,
+            expense_transactions: 50
+        });
+        expect(response.statusCode).toBe(201);
+    });
 
-    // it("POST route should return a 500 status code for attempt creation of existing record", async ()=>{
-    //     response = await request(app)
-    //     .post("/totalbalance")
-    //     .send({
-    //         user_name: "test-post",
-    //         total_balance: 500,
-    //         date_created: "2024-07-10",
-    //         income_transactions: 50,
-    //         expense_transactions: 50
-    //     });
-    //     expect(response.statusCode).toBe(500);
-    // });
+    it("POST route should return a 500 status code for attempt creation of existing record", async ()=>{
+        response = await request(app)
+        .post("/totalbalance")
+        .send({
+            user_name: "test-post",
+            total_balance: 500,
+            date_created: "2024-07-10",
+            income_transactions: 50,
+            expense_transactions: 50
+        });
+        expect(response.statusCode).toBe(500);
+    });
 
-    // it("POST route should return a 500 status code for incorrect or missing data sent", async ()=>{
-    //     response = await request(app)
-    //     .post("/totalbalance")
-    //     .send({
-    //         user_name: "test-post",
-    //         total_balance: 500,
-    //         date_created: "2024-07-10",
-    //         income_transactions: 50,
-    //         expense_transactions: "test-incorrect-data"
-    //     });
-    //     expect(response.statusCode).toBe(500);
-    // });
+    it("POST route should return a 500 status code for incorrect or missing data sent", async ()=>{
+        response = await request(app)
+        .post("/totalbalance")
+        .send({
+            user_name: "test-post",
+            total_balance: 500,
+            date_created: "2024-07-10",
+            income_transactions: 50,
+            expense_transactions: "test-incorrect-data"
+        });
+        expect(response.statusCode).toBe(500);
+    });
 
-    // it("DELETE route should return a 200 status code for successfull deletion of record", async ()=>{
-    //     response = await request(app)
-    //     .delete("/totalbalance/7")
-    //     expect(response.statusCode).toBe(200);
-    // });
+    it("DELETE route should return a 200 status code for successfull deletion of record", async ()=>{
+        response = await request(app)
+        .delete("/totalbalance/7")
+        expect(response.statusCode).toBe(200);
+    });
 
     it("DELETE route should return a 404 status code when providing invalid id", async ()=>{
         response = await request(app)
