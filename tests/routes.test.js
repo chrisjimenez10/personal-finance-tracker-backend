@@ -15,7 +15,20 @@ describe("API Routes Status", ()=>{
         expect(response.statusCode).toBe(200);
     });
 
-    it("PUT route should return a 404 for invalid id", async()=>{
+    it("PUT route should return a 200 status code for valid edit of record", async()=>{
+        const response = await request(app)
+        .put("/totalbalance/1")
+        .send({
+            user_name: "test",
+            total_balance: 100,
+            date_created: "2024-07-10",
+            income_transactions: 0,
+            expense_transactions: 0
+        });
+        expect(response.statusCode).toBe(200);
+    });
+
+    it("PUT route should return a 404 status code for invalid id", async()=>{
         const response = await request(app)
         .put("/totalbalance/100")
         //The send() method from SuperTest is used to send data as an object in JavaScript and gets sent in JSON format --> It automatically sets the "Content-Type" header to application/json
