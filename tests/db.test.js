@@ -20,7 +20,7 @@ describe("PostgreSQL Connection", ()=>{
 
 describe("PostgreSQL Queries", ()=>{
 
-    //Setup before each test is executed
+    //Setup before each test is executed --> These are called hooks and are used to setup and teardown operations (Ensures each test runs in isolation with a fresh connection)
     beforeEach(async ()=>{
         client = await pool.connect();
     });
@@ -34,7 +34,7 @@ describe("PostgreSQL Queries", ()=>{
 
     it("should return run a successfull query", async ()=>{
         const results = await client.query("SELECT * FROM user_accounts;");
-        expect(results.rows.length).toBeGreaterThanOrEqual(0);
+        expect(results.rows).toEqual(expect.any(Array)); //Using the "Array" constructur as the arguemnt for any() method to check that the query result is any type of Array
     });
 
     it("should return the key property id", async ()=>{
@@ -44,7 +44,7 @@ describe("PostgreSQL Queries", ()=>{
 
     it("should return user_name property key value as a string", async ()=>{
         const results = await client.query("SELECT * FROM user_accounts;");
-        expect(typeof results.rows[0].user_name).toBe("sring");
+        expect(typeof results.rows[0].user_name).toBe("string");
     })
 
 });
