@@ -94,7 +94,11 @@ router.put("/:id", async (req, res)=>{
             res.status(200).json({message: "Record updated successfully"});
         }
     }catch(error){
+        if(res.statusCode === 404){
+            res.json({error:error.message});
+        }else{
         res.status(500).json({error:error.message});
+        }
     }finally{
         client.release();
     }
