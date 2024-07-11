@@ -1,22 +1,27 @@
+//Import
 const express = require("express");
-const app = express();
 const morgan = require("morgan");
 const totalBalanceRouter = require("./Controllers/totalBalance.js");
+
+const app = express();
+const port = 3000;
 
 //Middleware
 app.use(express.json());
 app.use(morgan("dev"));
 
 //Controllers
-app.use("/totalBalance", totalBalanceRouter);
+app.use("/totalbalance", totalBalanceRouter);
 
 //Routes
-app.get("/", (req, res)=>{
+app.get("/", async (req, res)=>{
     res.send("Landing Page");
 });
 
-
 //Start Application
-app.listen(3000, ()=>{
-    console.log("Server is running on port 3000");
+app.listen(port, ()=>{
+    console.log(`Server is running on port ${port}`);
 });
+
+//Export
+module.exports = app;
