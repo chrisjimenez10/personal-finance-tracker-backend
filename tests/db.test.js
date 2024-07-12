@@ -57,6 +57,11 @@ describe("PostgreSQL Queries", ()=>{
         expect(results.rows[0].date_created).toEqual(expect.any(Date));
     });
 
+    it("should return income_transactions key value as an integer", async()=>{
+        const results = await client.query("SELECT * FROM user_accounts;");
+        expect(results.rows[0].income_transactions).toEqual(expect.any(Number));
+    });
+
     
 
 });
