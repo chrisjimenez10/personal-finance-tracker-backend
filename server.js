@@ -20,7 +20,7 @@ app.get("/", async (req, res)=>{
 
 //Start Application
 app.listen(port, ()=>{
-    // console.log(`Server is running on port ${port}`);
+    console.log(`Server is running on port ${port}`);
 });
 
 //Export
