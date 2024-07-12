@@ -45,7 +45,27 @@ describe("PostgreSQL Queries", ()=>{
     it("should return user_name property key value as a string", async ()=>{
         const results = await client.query("SELECT * FROM user_accounts;");
         expect(typeof results.rows[0].user_name).toBe("string");
-    })
+    });
+
+    it("should return total_balance key value as an integer", async()=>{
+        const results = await client.query("SELECT * FROM user_accounts;");
+        expect(typeof results.rows[0].total_balance).toBe("number");
+    });
+
+    it("should return date_created key value in date format", async()=>{
+        const results = await client.query("SELECT * FROM user_accounts;");
+        expect(results.rows[0].date_created).toEqual(expect.any(Date));
+    });
+
+    it("should return income_transactions key value as an integer", async()=>{
+        const results = await client.query("SELECT * FROM user_accounts;");
+        expect(results.rows[0].income_transactions).toEqual(expect.any(Number));
+    });
+
+    it("should return expense_transactions key value as an integer", async()=>{
+        const results = await client.query("SELECT * FROM user_accounts;");
+        expect(results.rows[0].expense_transactions).toEqual(expect.any(Number));
+    });
 
 });
 
