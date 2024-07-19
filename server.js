@@ -13,6 +13,7 @@ app.use(morgan("dev"));
 
 //Controllers
 app.use("/totalbalance", totalBalanceRouter);
+app.use("/users", userRouter);
 
 //Routes
 app.get("/", async (req, res)=>{
