@@ -2,6 +2,7 @@
 const express = require("express");
 const morgan = require("morgan");
 const totalBalanceRouter = require("./Controllers/totalBalance.js");
+const userRouter = require("./Controllers/auth.js");
 
 const app = express();
 const port = 3000;
