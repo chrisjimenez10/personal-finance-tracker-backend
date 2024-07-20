@@ -15,6 +15,7 @@ const pool = new Pool({
 });
 
 let client;
+let userDb;
 
 //Retrieve Users
 router.get("/", verifyToken, async (req, res)=>{
@@ -27,7 +28,31 @@ router.get("/", verifyToken, async (req, res)=>{
     }finally{
         client.release();
     }
-})
+});
+
+//Delete User (Authorized Access Only)
+router.delete("/:id", verifyToken, async (req, res)=>{
+    const {id} = req.params;
+    try{
+        client = await pool.connect();
+        userDb = await client.query("SELECT * FROM users WHERE id = $1;", [id]);
+        if(userDb.rows.length === 0){
+            res.status(404);
+            throw new Error (`User with id ${id} not found, please provide valid id`);
+        }else{
+            await client.query("DELETE FROM users WHERE id = $1;", [id]);
+            res.status(200).json({message: `User with id ${id} deleted successfully`});
+        }
+    }catch(error){
+        if(res.statusCode === 404){
+            res.json({error:error.message});
+        }else{
+            res.status(500).json({error:error.message});
+        }
+    }finally{
+        client.release();
+    }
+});
 
 //Register New User
 router.post("/sign-up", async (req, res)=>{
@@ -41,10 +66,14 @@ router.post("/sign-up", async (req, res)=>{
         //Find potential existing user_name
         await client.query("INSERT INTO users (user_name, password) VALUES ($1, $2)", [user_name, hashedPassword]);
 
-        //Create JWT Token
-        const token = jwt.sign({username: user_name}, process.env.JWT_SECRET);
+        //Retrieve created user to use data for JSON payload on JWT Token creation
+        const createdUser = await client.query("SELECT * FROM users WHERE user_name = $1;", [user_name]);
+        // console.log(createdUser.rows[0]);
 
-        res.status(201).json({message: "User account registered successfully", token: token, username: user_name});
+        //Create JWT Token
+        const token = jwt.sign({user: createdUser.rows[0]}, process.env.JWT_SECRET);
+
+        res.status(201).json({message: "User account registered successfully", token: token, user: createdUser.rows[0]});
     }catch(error){
         //We can use the error thrown by PostgreSQL when the UNIQUE constraint is violated --> PostgreSQL throws error with code "23505" when UNIQUE constraint is violated, which we can access with "error.code"
         if(error.code === '23505'){
@@ -62,7 +91,7 @@ router.post("/sign-in", async (req, res)=>{
 
     try{
         client = await pool.connect();
-        const userDb = await client.query("SELECT * FROM users WHERE user_name = $1", [user_name])
+        userDb = await client.query("SELECT * FROM users WHERE user_name = $1", [user_name]);
         // console.log(userDb.rows[0].password);
         if(userDb.rows.length === 0){
             res.status(404);

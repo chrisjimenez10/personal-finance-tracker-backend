@@ -114,7 +114,7 @@ router.delete("/:id", async (req, res)=>{
             res.status(404);
             throw new Error ("User account does not exist, please provide valid id");
         }else{
-            await client.query("DELETE from user_accounts WHERE id = $1;", [id]);
+            await client.query("DELETE FROM user_accounts WHERE id = $1;", [id]);
             res.status(200).json({message: `Record with id ${id} deleted successfully`});
         }  
     }catch(error){
