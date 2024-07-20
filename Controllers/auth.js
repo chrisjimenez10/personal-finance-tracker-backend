@@ -71,7 +71,7 @@ router.post("/sign-up", async (req, res)=>{
         // console.log(createdUser.rows[0]);
 
         //Create JWT Token
-        const token = jwt.sign({user: createdUser.rows[0]}, process.env.JWT_SECRET);
+        const token = jwt.sign({user: createdUser.rows[0]}, process.env.JWT_SECRET, {expiresIn: "1d"});
 
         res.status(201).json({message: "User account registered successfully", token: token, user: createdUser.rows[0]});
     }catch(error){
@@ -105,7 +105,7 @@ router.post("/sign-in", async (req, res)=>{
         }
 
         //Create JWT Token
-        const token = jwt.sign({user: userDb.rows[0]}, process.env.JWT_SECRET);
+        const token = jwt.sign({user: userDb.rows[0]}, process.env.JWT_SECRET, {expiresIn: "1d"});
 
         res.status(200).json({message: "Username and Password are valid, you are now signed-in", token: token, user: userDb.rows[0]});
     }catch(error){
