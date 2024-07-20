@@ -21,7 +21,7 @@ let userDb;
 router.get("/", async (req, res)=>{
     try{
         client = await pool.connect();
-        const results = await client.query("SELECT * FROM users;");
+        const results = await client.query("SELECT id, user_name FROM users;");
         res.status(200).json(results.rows);
     }catch(error){
         res.status(500).json({error:error.message});
@@ -101,7 +101,7 @@ router.post("/signin", async (req, res)=>{
         const validPassword = bcrypt.compareSync(password, userDb.rows[0].password);
         if(!validPassword){
             res.status(409)
-            throw new Error (`Incorrect password, try again`)
+            throw new Error (`Incorrect password, try again`);
         }
 
         //Create JWT Token
