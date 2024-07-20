@@ -18,7 +18,7 @@ let client;
 let userDb;
 
 //Retrieve Users
-router.get("/", verifyToken, async (req, res)=>{
+router.get("/", async (req, res)=>{
     try{
         client = await pool.connect();
         const results = await client.query("SELECT * FROM users;");
@@ -55,7 +55,7 @@ router.delete("/:id", verifyToken, async (req, res)=>{
 });
 
 //Register New User
-router.post("/sign-up", async (req, res)=>{
+router.post("/signup", async (req, res)=>{
     const {user_name, password} = req.body;
     //Hashing Password
     const hashedPassword = bcrypt.hashSync(password, 10);
@@ -86,7 +86,7 @@ router.post("/sign-up", async (req, res)=>{
     }
 });
 
-router.post("/sign-in", async (req, res)=>{
+router.post("/signin", async (req, res)=>{
     const {user_name, password} = req.body;
 
     try{
