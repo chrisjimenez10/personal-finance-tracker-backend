@@ -3,6 +3,7 @@ const express = require("express");
 const router = express.Router();
 const { Pool } = require("pg"); //Using the Pool Class to configure connection to Posgtres Databse
 require("dotenv").config();
+const verifyToken = require("../middleware/verifyToken.js");
 
 //Database Connection Configuration
 const pool = new Pool({
@@ -15,7 +16,7 @@ let client;
 let userAccountResults;
 
 //Routes
-router.get("/", async (req, res)=>{
+router.get("/", verifyToken, async (req, res)=>{
     try{
         client = await pool.connect(); //connect() establishes connections with Postgres
         const fetchedPets = await client.query("SELECT * FROM user_accounts;");
@@ -36,7 +37,7 @@ router.get("/", async (req, res)=>{
     }
 });
 
-router.get("/:id", async (req, res)=>{
+router.get("/:id", verifyToken, async (req, res)=>{
     const {id} = req.params;
     try{
         client = await pool.connect();
@@ -66,7 +67,7 @@ router.get("/:id", async (req, res)=>{
     }
 })
 
-router.post("/", async (req, res)=>{
+router.post("/", verifyToken, async (req, res)=>{
     const {user_name, total_balance, date_created, income_transactions, expense_transactions} = req.body;
     try{
         client = await pool.connect();
@@ -80,7 +81,7 @@ router.post("/", async (req, res)=>{
     }
 });
 
-router.put("/:id", async (req, res)=>{
+router.put("/:id", verifyToken, async (req, res)=>{
     const {id} = req.params;
     const {user_name, total_balance, date_created, income_transactions, expense_transactions} = req.body;
     try{
@@ -104,7 +105,7 @@ router.put("/:id", async (req, res)=>{
     }
 });
 
-router.delete("/:id", async (req, res)=>{
+router.delete("/:id", verifyToken, async (req, res)=>{
     const {id} = req.params;
     try{
         client = await pool.connect();
@@ -114,7 +115,7 @@ router.delete("/:id", async (req, res)=>{
             res.status(404);
             throw new Error ("User account does not exist, please provide valid id");
         }else{
-            await client.query("DELETE from user_accounts WHERE id = $1;", [id]);
+            await client.query("DELETE FROM user_accounts WHERE id = $1;", [id]);
             res.status(200).json({message: `Record with id ${id} deleted successfully`});
         }  
     }catch(error){
