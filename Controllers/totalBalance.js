@@ -16,7 +16,7 @@ let client;
 let userAccountResults;
 
 //Routes
-router.get("/", verifyToken, async (req, res)=>{
+router.get("/", async (req, res)=>{
     try{
         client = await pool.connect(); //connect() establishes connections with Postgres
         const fetchedPets = await client.query("SELECT * FROM user_accounts;");
