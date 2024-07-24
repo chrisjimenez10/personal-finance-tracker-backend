@@ -19,7 +19,7 @@ let userAccountResults;
 router.get("/join", async (req, res)=>{
     try{
         client = await pool.connect();
-        const fetchedUsers = await client.query("SELECT * FROM users FULL JOIN user_accounts ON users.id = user_accounts.user_id WHERE users.id = 20;");
+        const fetchedUsers = await client.query("SELECT * FROM users FULL JOIN user_accounts ON users.id = user_accounts.user_id;");
         res.status(200).json(fetchedUsers.rows);
     }catch(error){
         res.status(500).json({error:error.message});
@@ -81,12 +81,13 @@ router.get("/:id", async (req, res)=>{
     }
 })
 
-router.post("/", async (req, res)=>{
-    const {user_name, total_balance, date_created, income_transactions, expense_transactions} = req.body;
+router.post("/:id", async (req, res)=>{
+    const {id} = req.params;
+    const {income_transaction, expense_transaction} = req.body;
     try{
         client = await pool.connect();
         //Express/NodeJS use "$1, $2, $n..." for paramaterized queries with Postgres
-        await client.query("INSERT INTO user_accounts (user_name, total_balance, date_created, income_transactions, expense_transactions) VALUES ($1, $2, $3, $4, $5);", [user_name, total_balance, date_created, income_transactions, expense_transactions]);
+        await client.query("INSERT INTO user_accounts (user_id, income_transaction, expense_transaction) VALUES ($1, $2, $3);", [id, income_transaction, expense_transaction]);
         res.status(201).json({message: "Record inserted successfully"});
     }catch(error){
         res.status(500).json({error:error.message});
@@ -95,21 +96,30 @@ router.post("/", async (req, res)=>{
     }
 });
 
-router.put("/:id", async (req, res)=>{
-    const {id} = req.params;
-    const {user_name, total_balance, date_created, income_transactions, expense_transactions} = req.body;
+router.put("/:transactionId", async (req, res)=>{
+    const {transactionId} = req.params;
+    const {user_id, income_transaction, expense_transaction} = req.body;
     try{
         client = await pool.connect();
-        userAccountResults = await client.query("SELECT * FROM user_accounts WHERE id = $1;", [id]);
+
+        const userIdResults = await client.query("SELECT * FROM user_accounts WHERE user_id = $1;", [user_id]);
+        if(userIdResults.rows.length === 0){
+            res.status(403);
+            throw new Error (`User id ${user_id} account details is a protected source`);
+        }
+
+        userAccountResults = await client.query("SELECT * FROM user_accounts WHERE id = $1;", [transactionId]);
         if(userAccountResults.rows.length === 0){
             res.status(404);
-            throw new Error ("User account does not exist, please provide valid id");
+            throw new Error (`History of User transaction with id ${transactionId} does not exist, please provide valid transaction id`);
         }else{
-            await client.query("UPDATE user_accounts SET user_name = $1, total_balance = $2, date_created = $3, income_transactions = $4, expense_transactions = $5 WHERE id = $6;", [user_name, total_balance, date_created, income_transactions, expense_transactions, id]);
+            await client.query("UPDATE user_accounts SET income_transaction = $1, expense_transaction = $2 WHERE id = $3;", [income_transaction, expense_transaction, transactionId]);
             res.status(200).json({message: "Record updated successfully"});
         }
     }catch(error){
         if(res.statusCode === 404){
+            res.json({error:error.message});
+        }else if(res.statusCode === 403){
             res.json({error:error.message});
         }else{
         res.status(500).json({error:error.message});
