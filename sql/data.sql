@@ -37,3 +37,9 @@ EXECUTE FUNCTION update_total_balance();
 --View all functions: \df
 --View all triggers in a table: \dS table_name
 
+CREATE TRIGGER update_balance_after_insert
+BEFORE UPDATE ON user_accounts
+FOR EACH ROW
+EXECUTE FUNCTION update_total_balance();
+
+

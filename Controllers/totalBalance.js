@@ -18,7 +18,7 @@ let userIdResults;
 
 //Routes
 
-//GET all the existing transactions
+//GET all the existing transactions (NOT available to any User in Frontend)
 router.get("/", async (req, res)=>{
     try{
         client = await pool.connect(); //connect() establishes connections with Postgres
