@@ -18,7 +18,7 @@ let client;
 let userDb;
 
 //Retrieve Users
-router.get("/", verifyToken, async (req, res)=>{
+router.get("/", async (req, res)=>{
     try{
         client = await pool.connect();
         const results = await client.query("SELECT id, user_name FROM users;");
