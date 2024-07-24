@@ -50,7 +50,7 @@ router.get("/", async (req, res)=>{
     }
 });
 
-router.get("/:id", verifyToken, async (req, res)=>{
+router.get("/:id", async (req, res)=>{
     const {id} = req.params;
     try{
         client = await pool.connect();
@@ -80,7 +80,7 @@ router.get("/:id", verifyToken, async (req, res)=>{
     }
 })
 
-router.post("/", verifyToken, async (req, res)=>{
+router.post("/", async (req, res)=>{
     const {user_name, total_balance, date_created, income_transactions, expense_transactions} = req.body;
     try{
         client = await pool.connect();
@@ -94,7 +94,7 @@ router.post("/", verifyToken, async (req, res)=>{
     }
 });
 
-router.put("/:id", verifyToken, async (req, res)=>{
+router.put("/:id", async (req, res)=>{
     const {id} = req.params;
     const {user_name, total_balance, date_created, income_transactions, expense_transactions} = req.body;
     try{
@@ -118,7 +118,7 @@ router.put("/:id", verifyToken, async (req, res)=>{
     }
 });
 
-router.delete("/:id", verifyToken, async (req, res)=>{
+router.delete("/:id", async (req, res)=>{
     const {id} = req.params;
     try{
         client = await pool.connect();
