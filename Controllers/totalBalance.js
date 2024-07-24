@@ -19,7 +19,7 @@ let userAccountResults;
 router.get("/join", async (req, res)=>{
     try{
         client = await pool.connect();
-        const fetchedUsers = await client.query("SELECT * FROM users FULL JOIN user_accounts ON users.id = user_accounts.user_id WHERE users.id = 1;");
+        const fetchedUsers = await client.query("SELECT * FROM users FULL JOIN user_accounts ON users.id = user_accounts.user_id WHERE users.id = 20;");
         res.status(200).json(fetchedUsers.rows);
     }catch(error){
         res.status(500).json({error:error.message});
@@ -54,7 +54,7 @@ router.get("/:id", async (req, res)=>{
     const {id} = req.params;
     try{
         client = await pool.connect();
-        userAccountResults = await client.query("SELECT * FROM user_accounts WHERE id = $1;", [id]);
+        userAccountResults = await client.query("SELECT * FROM users FULL JOIN user_accounts ON users.id = user_accounts.user_id WHERE users.id = $1;", [id]);
         if(userAccountResults.rows.length === 0){
             res.status(404);
             throw new Error ("User account does not exist, please provide valid id");
@@ -62,10 +62,11 @@ router.get("/:id", async (req, res)=>{
             const formattedData = userAccountResults.rows.map(row => ({
                 id: row.id,
                 user_name: row.user_name,
+                user_id: row.user_id,
                 total_balance: row.total_balance,
-                date_created: row.date_created.toISOString().split("T")[0],
-                income_transactions: row.income_transactions,
-                expense_transactions: row.expense_transactions
+                date_transaction: row.date_transaction.toISOString().split("T")[0],
+                income_transaction: row.income_transaction,
+                expense_transaction: row.expense_transaction
             }))
             res.status(200).json(formattedData);
         }     
