@@ -15,18 +15,31 @@ const pool = new Pool({
 let client;
 let userAccountResults;
 
+//Example route for crud operations on users and their account details
+router.get("/join", async (req, res)=>{
+    try{
+        client = await pool.connect();
+        const fetchedUsers = await client.query("SELECT * FROM users FULL JOIN user_accounts ON users.id = user_accounts.user_id WHERE users.id = 1;");
+        res.status(200).json(fetchedUsers.rows);
+    }catch(error){
+        res.status(500).json({error:error.message});
+    }finally{
+        client.release();
+    }
+});
+
 //Routes
 router.get("/", async (req, res)=>{
     try{
         client = await pool.connect(); //connect() establishes connections with Postgres
-        const fetchedPets = await client.query("SELECT * FROM user_accounts;");
-        const formattedData = fetchedPets.rows.map(row => ({
+        const fetchedUsers = await client.query("SELECT * FROM user_accounts;");
+        const formattedData = fetchedUsers.rows.map(row => ({
             id: row.id,
-            user_name: row.user_name,
+            user_id: row.user_id,
             total_balance: row.total_balance,
-            date_created: row.date_created.toISOString().split("T")[0], //The toISOString() method converst the Date object into a string, so we can use the split() method at the "T" and return the first section of that string array created by split() method which is the section with ONLY the date format
-            income_transactions: row.income_transactions,
-            expense_transactions: row.expense_transactions
+            date_transaction: row.date_transaction.toISOString().split("T")[0], //The toISOString() method converst the Date object into a string, so we can use the split() method at the "T" and return the first section of that string array created by split() method which is the section with ONLY the date format
+            income_transaction: row.income_transaction,
+            expense_transaction: row.expense_transaction
         }))
         //Here, we use "".rows" to display in JSON Format ONLY the records and not the additional metadata that the previous query fetched
         res.status(200).json(formattedData);

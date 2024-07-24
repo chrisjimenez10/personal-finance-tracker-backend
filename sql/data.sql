@@ -30,7 +30,10 @@ $$ LANGUAGE plpgsql;
 
 --Creating a Trigger: This trigger is activated when a certain action occurs, which is an INSERT INTO action, and we code the instruction to EXECUTE our function
 CREATE TRIGGER update_balance_after_insert
-BEFORE INSERT ON transactions
+BEFORE INSERT ON user_accounts
 FOR EACH ROW
 EXECUTE FUNCTION update_total_balance();
+
+--View all functions: \df
+--View all triggers in a table: \dS table_name
 
