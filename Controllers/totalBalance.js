@@ -46,7 +46,7 @@ router.get("/:id", async (req, res)=>{
     const {id} = req.params;
     try{
         client = await pool.connect();
-        userAccountResults = await client.query("SELECT * FROM users FULL JOIN user_accounts ON users.id = user_accounts.user_id WHERE users.id = $1;", [id]);
+        userAccountResults = await client.query("SELECT * FROM users FULL JOIN user_accounts ON users.id = user_accounts.user_id WHERE users.id = $1 ORDER BY date_transaction ASC, user_accounts.id ASC;", [id]);
         if(userAccountResults.rows.length === 0){
             res.status(404);
             throw new Error ("User account does not exist, please provide valid id");
