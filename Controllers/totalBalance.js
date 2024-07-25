@@ -52,13 +52,14 @@ router.get("/:id", async (req, res)=>{
             throw new Error ("User account does not exist, please provide valid id");
         }else{
             const formattedData = userAccountResults.rows.map(row => ({
-                id: row.id,
-                user_name: row.user_name,
-                user_id: row.user_id,
-                total_balance: row.total_balance,
-                date_transaction: row.date_transaction.toISOString().split("T")[0],
-                income_transaction: row.income_transaction,
-                expense_transaction: row.expense_transaction
+                //NOTE: Here, we are using the nullish coalescing operator because when a User is created and if they go to the "Transactions" component all of these values are "undefined" because the User HAS NOT added nor removed income from their total_balance --> This way we can send a default value, so that our frontend does not crash
+                id: row.id ?? 0,
+                user_name: row.user_name ?? "null",
+                user_id: row.user_id ?? 0,
+                total_balance: row.total_balance ?? 0.00,
+                date_transaction: row.date_transaction ?? "0000-00-00",
+                income_transaction: row.income_transaction ?? 0.00,
+                expense_transaction: row.expense_transaction ?? 0.00
             }))
             res.status(200).json(formattedData);
         }     
